@@ -1,3 +1,4 @@
+"use client";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import BackButton from "../components/BackButton";

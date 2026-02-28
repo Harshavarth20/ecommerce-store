@@ -1,26 +1,33 @@
 "use client";
 
 export default function CategoryFilter({ setCategory }) {
+
+  const categories = [
+    "",
+    "men's clothing",
+    "women's clothing",
+    "jewelery",
+    "electronics"
+  ];
+
   return (
-    <div className="w-full">
-      <select
-        onChange={(e) => setCategory(e.target.value)}
-        className="
-          w-full
-          px-4 py-3
-          text-sm sm:text-base
-          bg-black
-          border border-gray-700
-          rounded-lg
-          outline-none
-          focus:border-cyan-400
-          transition-all
-        "
-      >
-        <option value="">All Categories</option>
-        <option value="Electronics">Electronics</option>
-        <option value="Fashion">Fashion</option>
-      </select>
-    </div>
+    <select
+      onChange={(e) => setCategory(e.target.value)}
+      className="
+        w-full px-4 py-3
+        bg-black border border-gray-700
+        rounded-lg
+        cursor-pointer
+      "
+    >
+      <option value="">All Categories</option>
+
+      {categories.slice(1).map(cat => (
+        <option key={cat} value={cat}>
+          {cat}
+        </option>
+      ))}
+
+    </select>
   );
 }

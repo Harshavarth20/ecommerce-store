@@ -1,57 +1,79 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { products } from "../../../data/products";
 import { useCart } from "../../../context/CartContext";
 import toast from "react-hot-toast";
 
 export default function ProductDetails() {
 
-	const params = useParams();
-	const { addToCart } = useCart();
+  const params = useParams();
+  const { addToCart } = useCart();
 
-	const product = products.find(
-		(p) => p.id === parseInt(params.id)
-	);
+  const [product, setProduct] = useState(null);
 
-	if (!product) {
-		return <p>Product not found</p>;
-	}
+  useEffect(() => {
+    fetch(`https://fakestoreapi.com/products/${params.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setProduct({
+          id: data.id,
+          name: data.title,
+          price: Math.floor(data.price * 80),
+          image: data.image,
+          category: data.category,
+          description: data.description
+        });
+      });
+  }, [params.id]);
 
-	return (
-		<div className="grid md:grid-cols-2 gap-8">
+  if (!product) return <p>Loading...</p>;
 
-			<img
-				src={product.image}
-				className="w-full rounded-lg"
-			/>
+  return (
+    <div className="grid md:grid-cols-2 gap-8">
 
-			<div>
+      <img
+        src={product.image}
+        className="w-full rounded-lg"
+      />
 
-				<h1 className="text-3xl font-bold mb-4">
-					{product.name}
-				</h1>
+      <div>
 
-				<p className="text-gray-400 mb-4">
-					Category: {product.category}
-				</p>
+        <h1 className="text-3xl font-bold mb-4">
+          {product.name}
+        </h1>
 
-				<p className="text-2xl mb-4">
-					₹{product.price}
-				</p>
+        <p className="text-gray-400 mb-4">
+          {product.category}
+        </p>
 
-				<button
-					onClick={() => {
-						addToCart(product);
-						toast.success("Added to cart 🛒");
-					}}
-					className="bg-cyan-400 text-black px-6 py-3 rounded-lg cursor-pointer hover:bg-cyan-300"
-				>
-					Add to Cart
-				</button>
+        <p className="text-2xl mb-4">
+          ₹{product.price}
+        </p>
 
-			</div>
+        <p className="text-gray-400 mb-6">
+          {product.description}
+        </p>
 
-		</div>
-	);
+        <button
+          onClick={() => {
+            addToCart(product);
+            toast.success("Added to cart");
+          }}
+          className="
+            bg-cyan-400
+            text-black
+            px-6 py-3
+            rounded-lg
+            cursor-pointer
+            hover:bg-cyan-300
+          "
+        >
+          Add to Cart
+        </button>
+
+      </div>
+
+    </div>
+  );
 }

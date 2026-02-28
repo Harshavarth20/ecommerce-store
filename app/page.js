@@ -1,68 +1,35 @@
-"use client";
+import ProductList from "../components/ProductList";
 
-import { useState } from "react";
-import { products } from "../data/products";
-import ProductCard from "../components/ProductCard";
-import SearchBar from "../components/SearchBar";
-import CategoryFilter from "../components/CategoryFilter";
-import { products } from "../data/products";
+async function getProducts() {
+  const res = await fetch("https://fakestoreapi.com/products", {
+    cache: "no-store",
+  });
 
-export default function Home() {
+  return res.json();
+}
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+export default async function Home() {
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(search.toLowerCase()) &&
-    (category === "" || product.category === category)
-  );
+  const products = await getProducts();
+
+  // transform API data
+  const formattedProducts = products.map(product => ({
+    id: product.id,
+    name: product.title,
+    price: Math.floor(product.price * 80),
+    image: product.image,
+    category: product.category,
+    description: product.description
+  }));
 
   return (
     <div className="w-full">
 
-      <h1 className="
-        text-2xl sm:text-3xl md:text-4xl
-        font-bold
-        mb-6
-      ">
+      <h1 className="text-3xl font-bold mb-6">
         Explore Products
       </h1>
 
-      {/* Search + Filter container */}
-      <div className="
-        flex
-        flex-col
-        sm:flex-row
-        gap-4
-        mb-6
-      ">
-
-        <div className="flex-1">
-          <SearchBar setSearch={setSearch} />
-        </div>
-
-        <div className="flex-1 sm:max-w-xs">
-          <CategoryFilter setCategory={setCategory} />
-        </div>
-
-      </div>
-
-      {/* Product grid */}
-      <div className="
-        grid
-        grid-cols-1
-        sm:grid-cols-2
-        md:grid-cols-3
-        lg:grid-cols-4
-        xl:grid-cols-5
-        gap-6
-      ">
-
-        {filteredProducts.map(product => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-
-      </div>
+      <ProductList products={formattedProducts} />
 
     </div>
   );

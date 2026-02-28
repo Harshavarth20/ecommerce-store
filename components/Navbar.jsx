@@ -18,6 +18,10 @@ export default function Navbar() {
           </h1>
         </Link>
 
+        <Link href="/wishlist" className="cursor-pointer hover:text-cyan-400">
+          Wishlist
+        </Link>
+
         <Link href="/cart">
           <p className="text-white">
             Cart ({cart.length})

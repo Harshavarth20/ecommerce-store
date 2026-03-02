@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import ProductList from "../components/ProductList";
 
 async function getProducts() {
@@ -7,14 +9,22 @@ async function getProducts() {
     });
 
     if (!res.ok) {
-      throw new Error("Failed to fetch products");
+      console.error("Fetch failed:", res.status);
+      return [];
     }
 
-    return await res.json();
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      console.error("Invalid data:", data);
+      return [];
+    }
+
+    return data;
 
   } catch (error) {
-    console.error("API Error:", error);
-    return []; // prevent crash
+    console.error("Fetch error:", error);
+    return [];
   }
 }
 
@@ -22,8 +32,7 @@ export default async function Home() {
 
   const products = await getProducts();
 
-  // transform API data
-  const formattedProducts = (products || []).map(product => ({
+  const formattedProducts = products.map(product => ({
     id: product.id,
     name: product.title,
     price: Math.floor(product.price * 80),

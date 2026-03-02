@@ -13,9 +13,16 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    fetch(`https://fakestoreapi.com/products/${params.id}`)
-      .then(res => res.json())
-      .then(data => {
+    async function loadProduct() {
+      try {
+        const res = await fetch(`https://fakestoreapi.com/products/${params.id}`);
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch product");
+        }
+
+        const data = await res.json();
+
         setProduct({
           id: data.id,
           name: data.title,
@@ -24,8 +31,17 @@ export default function ProductDetails() {
           category: data.category,
           description: data.description
         });
-      });
-  }, [params.id]);
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (params?.id) {
+      loadProduct();
+    }
+
+  }, [params?.id]);
 
   if (!product) return <p>Loading...</p>;
 
